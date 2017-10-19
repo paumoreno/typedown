@@ -6,10 +6,12 @@ const KEY_BACKTICK = 229
 const KEY_PAREN_LEFT = 40
 const KEY_BRACKET_LEFT = 91
 const KEY_CURLY_LEFT = 123
+const KEY_ASTERISK = 42
+const KEY_UNDERSCORE = 95
 
 const UL_ITEM_START = /^\s*[-+*] /
 const OL_ITEM_START = /^\s*\d+\. /
-
+const QUOTE_START = /^> /
 
 const getListItemPrefix = (line) => {
   const ulMatch = line.match(UL_ITEM_START)
@@ -103,6 +105,11 @@ const enterPressed = (event, {text, selStart}) => {
     } else {
       return writeNextListItemPrefix(event, text, selStart, listItemPrefix)
     }
+  } else {
+    const indentation = currentLine.match(/^(\s+)/)
+    if (indentation) {
+      return writeNextListItemPrefix(event, text, selStart, indentation[1])
+    }
   }
 }
 
@@ -148,7 +155,8 @@ const handleKeyPress = (event, inputState) => {
     switch (event.keyCode) {
       case KEY_DOUBLE_QUOTE:
       case KEY_QUOTE:
-        console.log("quote")
+      case KEY_ASTERISK:
+      case KEY_UNDERSCORE:
         return wrapSelection(event, inputState, event.key, event.key)
         break
       case KEY_PAREN_LEFT:
